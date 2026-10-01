@@ -14,6 +14,12 @@
     "storage.read",
     "storage.write"
   ],
+  "provides": {
+    "modera.subagents.roles": {
+      "contract": "modera.agent-roles",
+      "apiVersion": 1
+    }
+  },
   "extensions": [
     "tool.result",
     "settings"

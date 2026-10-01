@@ -48,6 +48,20 @@ export const activate: PluginModule["activate"] = async (host) => {
     : undefined;
   const catalog = async () =>
     store ? store.read() : { revision: 0, roles: defaults };
+  const roleCatalog = async (projectId?: string) => ({
+    ...(await catalog()),
+    templates: defaults,
+    options: await api.options?.(projectId),
+  });
+  const updateRoles = async (
+    revision: number,
+    change: { save?: unknown; remove?: string },
+  ) => {
+    if (!store) throw new Error("Role storage unavailable");
+    const result = await store.update(revision, change);
+    host.invalidateUi?.();
+    return { ...result, templates: defaults };
+  };
 
   const tools = declaredTools(manifest).map((definition) => ({
     definition,
@@ -110,19 +124,45 @@ export const activate: PluginModule["activate"] = async (host) => {
   }));
   return {
     tools,
+    services: {
+      "modera.subagents.roles": {
+        contract: "modera.agent-roles",
+        apiVersion: 1,
+        methods: {
+          catalog: {
+            requiredPermissions: ["storage.read"],
+            async call(_input, context) {
+              context.signal.throwIfAborted();
+              return roleCatalog(context.projectId);
+            },
+          },
+          save: {
+            requiredPermissions: ["storage.write"],
+            async call(raw, context) {
+              context.signal.throwIfAborted();
+              const input = raw as { revision: number; role: unknown };
+              return updateRoles(input.revision, { save: input.role });
+            },
+          },
+          remove: {
+            requiredPermissions: ["storage.write"],
+            async call(raw, context) {
+              context.signal.throwIfAborted();
+              const input = raw as { revision: number; id: string };
+              return updateRoles(input.revision, { remove: input.id });
+            },
+          },
+        },
+      },
+    },
     settings: {
       actions: ["catalog", "saveRole", "removeRole"],
       async act(action, context) {
         context.signal.throwIfAborted();
-        if (action.id === "catalog")
-          return {
-            ...(await catalog()),
-            templates: defaults,
-            options: await api.options?.(context.projectId),
-          };
+        if (action.id === "catalog") return roleCatalog(context.projectId);
         if (!store) throw new Error("Role storage unavailable");
         const input = JSON.parse(action.value ?? "{}");
-        const result = await store.update(
+        return updateRoles(
           input.revision,
           action.id === "saveRole"
             ? { save: input.role }
@@ -130,8 +170,6 @@ export const activate: PluginModule["activate"] = async (host) => {
               ? { remove: input.id }
               : {},
         );
-        host.invalidateUi?.();
-        return { ...result, templates: defaults };
       },
     },
     ui: [
