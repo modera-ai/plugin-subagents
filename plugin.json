@@ -1,0 +1,200 @@
+{
+  "apiVersion": 1,
+  "id": "modera.subagents",
+  "name": "子智能体",
+  "version": "0.1.0",
+  "description": "将任务委派给独立子智能体，查看独立会话并汇总执行结果。",
+  "author": "Modera",
+  "category": "tasks",
+  "icon": "tasks",
+  "main": "dist/index.cjs",
+  "activationScope": "scoped",
+  "permissions": [
+    "runs.delegate",
+    "storage.read",
+    "storage.write"
+  ],
+  "extensions": [
+    "tool.result",
+    "settings"
+  ],
+  "agentGuidance": "Call subagent_catalog before delegating to discover enabled configurable roles and their purposes. Delegate focused tasks using subagent_spawn. Include all context in the task. Default foreground starts workers immediately and waits after the current tool batch before the next parent model request. Start independent tasks in the same response to run them concurrently; use serial delegation when a task depends on a previous result. Use mode=background only when you have independent parent work to continue. explorer/reviewer use read tools; worker inherits operation tools with normal approval. Reports arrive automatically. Summarize assessed results for the user. At most four children run concurrently; children cannot delegate. Use subagent_list, subagent_wait and subagent_stop to manage background tasks.",
+  "locales": {
+    "en": {
+      "name": "Subagents",
+      "description": "Delegate focused work to independent child conversations and receive their reports."
+    }
+  },
+  "tools": [
+    {
+      "id": "subagent_catalog",
+      "title": "查看可用子智能体",
+      "description": "Discover enabled configurable subagent roles, descriptions, tool policy, model and limits. Call before selecting a role.",
+      "requiredPermissions": [
+        "runs.delegate"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      }
+    },
+    {
+      "id": "subagent_spawn",
+      "title": "启动子智能体",
+      "description": "Start an independent child Agent. Default foreground waits after the current tool batch before the parent continues; background returns immediately for independent parent work. Launch independent children in the same response for concurrency. Include all task context. Final reports arrive automatically.",
+      "requiredPermissions": [
+        "runs.delegate"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "agent",
+          "task"
+        ],
+        "properties": {
+          "agent": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "description": "Enabled role ID returned by subagent_catalog."
+          },
+          "task": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 100000
+          },
+          "tools": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "maxItems": 256,
+            "uniqueItems": true
+          },
+          "mode": {
+            "description": "Foreground (default) waits after the tool batch before the parent continues. Background lets the parent continue independent work and joins before final completion.",
+            "enum": [
+              "foreground",
+              "background"
+            ],
+            "type": "string"
+          }
+        }
+      },
+      "locales": {
+        "en": {
+          "title": "Start subagent"
+        }
+      },
+      "presentation": {
+        "kind": "tasks",
+        "tone": "teal",
+        "icon": "list",
+        "targets": [
+          "agent"
+        ]
+      }
+    },
+    {
+      "id": "subagent_list",
+      "title": "查看子智能体",
+      "description": "List this conversation's subagents and their statuses, including finished children. Only host-issued child IDs are valid for wait/stop.",
+      "requiredPermissions": [
+        "runs.delegate"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {}
+      },
+      "locales": {
+        "en": {
+          "title": "List subagents"
+        }
+      }
+    },
+    {
+      "id": "subagent_wait",
+      "title": "等待子智能体",
+      "description": "Wait for any selected child to settle, up to 60 seconds. Returns statuses, not reports; reports arrive automatically at the next safe boundary. A timeout does not stop a child.",
+      "requiredPermissions": [
+        "runs.delegate"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "ids"
+        ],
+        "properties": {
+          "ids": {
+            "type": "array",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            },
+            "minItems": 1,
+            "maxItems": 4,
+            "uniqueItems": true
+          },
+          "timeoutMs": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 60000
+          }
+        }
+      },
+      "locales": {
+        "en": {
+          "title": "Wait for subagents"
+        }
+      }
+    },
+    {
+      "id": "subagent_stop",
+      "title": "停止子智能体",
+      "description": "Stop a child belonging to this conversation. Already settled children remain available for review.",
+      "requiredPermissions": [
+        "runs.delegate"
+      ],
+      "inputSchema": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "locales": {
+        "en": {
+          "title": "Stop subagent"
+        }
+      }
+    }
+  ],
+  "configScope": "global",
+  "settings": {
+    "title": "子智能体配置",
+    "frontend": "settings",
+    "waitForReady": true,
+    "locales": {
+      "en": {
+        "title": "Subagent configuration"
+      }
+    }
+  },
+  "frontends": {
+    "settings": {
+      "entry": "settings.html",
+      "root": "dist/ui"
+    }
+  }
+}

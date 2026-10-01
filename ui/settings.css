@@ -1,0 +1,122 @@
+:root {
+  color-scheme: light dark;
+  font-family: system-ui, sans-serif;
+  color: light-dark(#263244, #e4e7ee);
+  background: light-dark(#fff, #191b20);
+}
+* {
+  box-sizing: border-box;
+}
+main {
+  padding: 24px;
+  max-width: 1100px;
+  margin: auto;
+}
+h2 {
+  font-size: 20px;
+  margin: 0 0 12px;
+}
+.description {
+  color: light-dark(#758093, #9aa4b4);
+  font-size: 13px;
+  line-height: 1.6;
+}
+.layout {
+  display: grid;
+  grid-template-columns: 210px 1fr;
+  gap: 24px;
+  margin-top: 24px;
+}
+aside {
+  border-right: 1px solid light-dark(#e7eaf0, #353841);
+  padding-right: 18px;
+}
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin: 16px 0;
+  font-size: 13px;
+}
+input,
+textarea,
+select,
+button {
+  font: inherit;
+  color: inherit;
+  border: 1px solid light-dark(#dce1ea, #424853);
+  background: light-dark(#fafbfd, #252830);
+  border-radius: 8px;
+  padding: 9px 11px;
+}
+textarea {
+  resize: vertical;
+  line-height: 1.5;
+}
+button {
+  cursor: pointer;
+}
+button:hover {
+  background: light-dark(#edf2ff, #343c50);
+}
+button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+aside button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin: 8px 0;
+}
+aside button[aria-current="true"] {
+  border-color: #6d96ec;
+  background: light-dark(#edf3ff, #263c5a);
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0 16px;
+}
+.check {
+  flex-direction: row;
+  align-items: center;
+}
+.actions {
+  display: flex;
+  gap: 10px;
+  margin: 20px 0;
+}
+.actions button[type="submit"] {
+  background: #4179df;
+  color: white;
+  border-color: #4179df;
+}
+#message[data-error="true"] {
+  color: light-dark(#b42318, #ff9c91);
+}
+[hidden] {
+  display: none !important;
+}
+@media (max-width: 620px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+  aside {
+    border-right: 0;
+  }
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+input[type="checkbox"] {
+  accent-color: #4179df;
+}
+#tool-choices {
+  max-height: 220px;
+  overflow: auto;
+}
+#tool-choices .check {
+  margin: 6px 0;
+}

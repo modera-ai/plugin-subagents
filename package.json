@@ -1,0 +1,25 @@
+{
+  "name": "@modera-plugin/subagents",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Host-managed subagents with independent child conversations.",
+  "files": [
+    "plugin.json",
+    "dist",
+    "LICENSE"
+  ],
+  "scripts": {
+    "build": "tsc --noEmit && modera-plugin-build .",
+    "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "@modera/plugin-build": "0.1.0",
+    "@modera/plugin-sdk": "0.1.0",
+    "typescript": "^5.9.2",
+    "@types/node": "^24.3.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT"
+}

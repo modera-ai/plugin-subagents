@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="settings.css" />
+  </head>
+  <body>
+    <main>
+      <h2>子智能体配置</h2>
+      <p class="description">
+        角色配置用于后续启动的任务。已运行的子智能体保留启动时的配置。
+      </p>
+      <div class="layout">
+        <aside>
+          <div id="roles"></div>
+          <button id="add">新增角色</button
+          ><label
+            >从模板新增<select id="template">
+              <option value="">选择模板…</option>
+            </select></label
+          >
+        </aside>
+        <form id="editor" hidden>
+          <div class="grid">
+            <label
+              >角色标识<input
+                name="id"
+                pattern="[a-z][a-z0-9_-]{0,63}"
+                maxlength="64"
+                required /></label
+            ><label>名称<input name="name" maxlength="120" required /></label>
+          </div>
+          <label
+            >用途<textarea
+              name="description"
+              maxlength="2000"
+              rows="2"
+              required
+            ></textarea></label
+          ><label
+            >提示词<textarea
+              name="prompt"
+              maxlength="32000"
+              rows="8"
+              required
+            ></textarea>
+          </label>
+          <label class="check"
+            ><input name="enabled" type="checkbox" />启用此角色</label
+          ><label
+            >默认执行模式<select name="mode">
+              <option value="foreground">等待结果后继续</option>
+              <option value="background">后台执行，主智能体继续独立工作</option>
+            </select></label
+          >
+          <label
+            >工具策略<select name="policy">
+              <option value="readonly">继承可用只读工具</option>
+              <option value="inherit">继承主智能体可用操作工具</option>
+              <option value="custom">指定工具</option>
+            </select></label
+          ><label id="tool-field" hidden
+            >工具标识（每行一个）
+            <div id="tool-choices"></div>
+            <textarea name="tools" rows="4"></textarea>
+          </label>
+          <p class="description">
+            继承范围以主智能体当前可用工具为准，授权规则保持一致。指定工具不可突破主智能体权限。
+          </p>
+          <label class="check"
+            ><input
+              name="customModel"
+              type="checkbox"
+            />指定模型（默认继承主智能体）</label
+          >
+          <div id="model-fields" class="grid" hidden>
+            <label>模型配置标识<select name="profileId"></select></label
+            ><label
+              >模型名称<input name="model" list="model-choices" /><datalist
+                id="model-choices"
+              ></datalist></label
+            ><label
+              >思考强度<select name="reasoning">
+                <option>none</option>
+                <option>minimal</option>
+                <option>low</option>
+                <option>medium</option>
+                <option>high</option>
+                <option>xhigh</option>
+              </select></label
+            >
+          </div>
+          <div class="grid">
+            <label
+              >最多步骤<input
+                name="maxSteps"
+                type="number"
+                min="1"
+                max="1000"
+                placeholder="100" /></label
+            ><label
+              >最长耗时（秒）<input
+                name="duration"
+                type="number"
+                min="1"
+                max="1800"
+                placeholder="600" /></label
+            ><label
+              >最多 Token<input
+                name="maxTokens"
+                type="number"
+                min="1"
+                max="2000000"
+                placeholder="500000"
+            /></label>
+          </div>
+          <p class="description">运行限制留空时使用默认值。</p>
+          <div class="actions">
+            <button type="submit">保存配置</button
+            ><button type="button" id="remove">删除角色</button>
+          </div>
+        </form>
+      </div>
+      <p id="message" role="status"></p>
+      <button id="reload" hidden>重新加载配置</button>
+    </main>
+    <script src="settings.js"></script>
+  </body>
+</html>
