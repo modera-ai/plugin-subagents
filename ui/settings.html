@@ -1,126 +1,259 @@
 <!doctype html>
-<html>
+<html lang="zh-CN">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <link rel="stylesheet" href="settings.css" />
   </head>
   <body>
-    <main>
-      <h2>子智能体配置</h2>
-      <p class="description">
-        角色配置用于后续启动的任务。已运行的子智能体保留启动时的配置。
-      </p>
+    <main class="workspace">
+      <header class="page-header">
+        <div class="eyebrow"><span>✦</span> MODERA · AGENT STUDIO</div>
+        <div class="heading-row">
+          <div>
+            <h1>子智能体工作室</h1>
+            <p>为每一种任务，配置恰到好处的专属搭档。</p>
+          </div>
+          <div class="header-count">
+            <strong id="role-count">0</strong><span>个已配置角色</span>
+          </div>
+        </div>
+      </header>
       <div class="layout">
-        <aside>
-          <div id="roles"></div>
-          <button id="add">新增角色</button
-          ><label
-            >从模板新增<select id="template">
-              <option value="">选择模板…</option>
-            </select></label
-          >
-        </aside>
-        <form id="editor" hidden>
-          <div class="grid">
-            <label
-              >角色标识<input
-                name="id"
-                pattern="[a-z][a-z0-9_-]{0,63}"
-                maxlength="64"
-                required /></label
-            ><label>名称<input name="name" maxlength="120" required /></label>
+        <aside class="library">
+          <div class="section-heading">
+            <span>角色目录</span><small>LIBRARY</small>
           </div>
-          <label
-            >用途<textarea
-              name="description"
-              maxlength="2000"
-              rows="2"
-              required
-            ></textarea></label
-          ><label
-            >提示词<textarea
-              name="prompt"
-              maxlength="32000"
-              rows="8"
-              required
-            ></textarea>
-          </label>
-          <label class="check"
-            ><input name="enabled" type="checkbox" />启用此角色</label
-          ><label
-            >默认执行模式<select name="mode">
-              <option value="foreground">等待结果后继续</option>
-              <option value="background">后台执行，主智能体继续独立工作</option>
-            </select></label
-          >
-          <label
-            >工具策略<select name="policy">
-              <option value="readonly">继承可用只读工具</option>
-              <option value="inherit">继承主智能体可用操作工具</option>
-              <option value="custom">指定工具</option>
-            </select></label
-          ><label id="tool-field" hidden
-            >工具标识（每行一个）
-            <div id="tool-choices"></div>
-            <textarea name="tools" rows="4"></textarea>
-          </label>
-          <p class="description">
-            继承范围以主智能体当前可用工具为准，授权规则保持一致。指定工具不可突破主智能体权限。
-          </p>
-          <label class="check"
+          <label class="search-field" for="role-search"
+            ><span aria-hidden="true">⌕</span
+            ><span class="sr-only">搜索角色</span
             ><input
-              name="customModel"
-              type="checkbox"
-            />指定模型（默认继承主智能体）</label
-          >
-          <div id="model-fields" class="grid" hidden>
-            <label>模型配置标识<select name="profileId"></select></label
-            ><label
-              >模型名称<input name="model" list="model-choices" /><datalist
-                id="model-choices"
-              ></datalist></label
-            ><label
-              >思考强度<select name="reasoning">
-                <option>none</option>
-                <option>minimal</option>
-                <option>low</option>
-                <option>medium</option>
-                <option>high</option>
-                <option>xhigh</option>
-              </select></label
-            >
+              id="role-search"
+              type="search"
+              placeholder="搜索角色…"
+              autocomplete="off"
+          /></label>
+          <div id="roles" class="role-list"></div>
+          <div class="library-actions">
+            <button id="add" class="add-button" type="button">
+              ＋ 创建空白角色</button
+            ><label for="template">从模板开始</label
+            ><select id="template">
+              <option value="">选择预设模板…</option>
+            </select>
           </div>
-          <div class="grid">
-            <label
-              >最多步骤<input
-                name="maxSteps"
-                type="number"
-                min="1"
-                max="1000"
-                placeholder="100" /></label
-            ><label
-              >最长耗时（秒）<input
-                name="duration"
-                type="number"
-                min="1"
-                max="1800"
-                placeholder="600" /></label
-            ><label
-              >最多 Token<input
-                name="maxTokens"
-                type="number"
-                min="1"
-                max="2000000"
-                placeholder="500000"
-            /></label>
+          <div class="library-footnote">
+            配置仅影响之后启动的任务。运行中的子智能体会保留启动时的设置。
           </div>
-          <p class="description">运行限制留空时使用默认值。</p>
-          <div class="actions">
-            <button type="submit">保存配置</button
-            ><button type="button" id="remove">删除角色</button>
+        </aside>
+        <section class="editor-panel">
+          <div id="empty-state" class="empty-state">
+            <div class="empty-icon">✧</div>
+            <h2>选择一个角色，开始设计</h2>
+            <p>设置职责、能力边界与运行方式，让每位子智能体各司其职。</p>
+            <button id="empty-add" type="button">创建角色 ↗</button>
           </div>
-        </form>
+          <form id="editor" hidden>
+            <div class="editor-topline">
+              <div>
+                <span class="overline">AGENT PROFILE</span>
+                <h2 id="editor-title">编辑角色</h2>
+                <p id="editor-subtitle">
+                  定义这个角色擅长什么，以及如何完成任务。
+                </p>
+                <div
+                  id="role-summary"
+                  class="role-summary"
+                  aria-label="当前配置概览"
+                ></div>
+                <span id="draft-indicator" hidden
+                  >● 未保存更改 · 切换角色可恢复</span
+                >
+              </div>
+              <label class="enable-control"
+                ><input name="enabled" type="checkbox" /><span
+                  >启用角色</span
+                ></label
+              >
+            </div>
+            <div class="form-section">
+              <div class="section-intro">
+                <span class="section-number">01</span>
+                <div>
+                  <h3>角色身份</h3>
+                  <p>清晰的名称和用途，帮助主智能体准确选择。</p>
+                </div>
+              </div>
+              <div class="section-body">
+                <div class="grid">
+                  <label
+                    >角色标识<input
+                      name="id"
+                      pattern="[a-z][a-z0-9_-]{0,63}"
+                      maxlength="64"
+                      placeholder="例如 code_reviewer"
+                      required /></label
+                  ><label
+                    >显示名称<input
+                      name="name"
+                      maxlength="120"
+                      placeholder="例如 代码审查员"
+                      required
+                  /></label>
+                </div>
+                <label
+                  >用途描述<textarea
+                    name="description"
+                    maxlength="2000"
+                    rows="3"
+                    placeholder="这个角色适合处理哪些任务？"
+                    required
+                  ></textarea>
+                </label>
+              </div>
+            </div>
+            <div class="form-section">
+              <div class="section-intro">
+                <span class="section-number">02</span>
+                <div>
+                  <h3>工作指令</h3>
+                  <p>写下职责、工作步骤和理想的交付结果。</p>
+                </div>
+              </div>
+              <div class="section-body">
+                <label
+                  >角色提示词<textarea
+                    name="prompt"
+                    maxlength="32000"
+                    rows="9"
+                    placeholder="你是一位…&#10;&#10;工作原则：&#10;1. …&#10;&#10;完成时请提供…"
+                    required
+                  ></textarea>
+                </label>
+                <div class="field-hint">
+                  具体的输入、输出和完成标准有助于稳定执行。
+                </div>
+              </div>
+            </div>
+            <div class="form-section">
+              <div class="section-intro">
+                <span class="section-number">03</span>
+                <div>
+                  <h3>执行与权限</h3>
+                  <p>决定何时返回结果，以及可使用哪些工具。</p>
+                </div>
+              </div>
+              <div class="section-body">
+                <div class="grid">
+                  <label
+                    >默认执行模式<select name="mode">
+                      <option value="foreground">等待结果后继续</option>
+                      <option value="background">
+                        后台执行，主智能体继续工作
+                      </option>
+                    </select></label
+                  ><label
+                    >工具策略<select name="policy">
+                      <option value="readonly">继承可用只读工具</option>
+                      <option value="inherit">继承主智能体可用操作工具</option>
+                      <option value="custom">指定工具</option>
+                    </select></label
+                  >
+                </div>
+                <div class="field-hint">
+                  工具始终受主智能体权限和授权规则约束。
+                </div>
+                <div id="tool-field" class="conditional-field" hidden>
+                  <div class="conditional-heading">指定可用工具</div>
+                  <div id="tool-choices" class="tool-choices"></div>
+                  <label
+                    >工具标识 · 每行一个<textarea
+                      name="tools"
+                      rows="4"
+                      placeholder="输入工具标识，或在上方勾选"
+                    ></textarea>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-section">
+              <div class="section-intro">
+                <span class="section-number">04</span>
+                <div>
+                  <h3>模型与预算</h3>
+                  <p>按任务难度配置模型，并设置运行上限。</p>
+                </div>
+              </div>
+              <div class="section-body">
+                <label class="model-toggle"
+                  ><input name="customModel" type="checkbox" /><span
+                    ><strong>指定模型</strong
+                    ><small>关闭时继承主智能体的模型选择</small></span
+                  ></label
+                >
+                <div id="model-fields" class="conditional-field" hidden>
+                  <div class="grid">
+                    <label>模型配置<select name="profileId"></select></label
+                    ><label
+                      >模型名称<input
+                        name="model"
+                        list="model-choices"
+                        placeholder="选择或输入模型" /><datalist
+                        id="model-choices"
+                      ></datalist
+                    ></label>
+                  </div>
+                  <label
+                    >思考强度<select name="reasoning">
+                      <option>none</option>
+                      <option>minimal</option>
+                      <option>low</option>
+                      <option>medium</option>
+                      <option>high</option>
+                      <option>xhigh</option>
+                    </select></label
+                  >
+                </div>
+                <div class="budget-heading">
+                  运行上限 <span>留空使用默认值</span>
+                </div>
+                <div class="grid budget-grid">
+                  <label
+                    >最多步骤<input
+                      name="maxSteps"
+                      type="number"
+                      min="1"
+                      max="1000"
+                      placeholder="100" /></label
+                  ><label
+                    >最长耗时 · 秒<input
+                      name="duration"
+                      type="number"
+                      min="1"
+                      max="1800"
+                      placeholder="600" /></label
+                  ><label
+                    >最多 Token<input
+                      name="maxTokens"
+                      type="number"
+                      min="1"
+                      max="2000000"
+                      placeholder="500000"
+                  /></label>
+                </div>
+              </div>
+            </div>
+            <div class="actions">
+              <div class="actions-secondary">
+                <button type="button" id="remove" class="danger-button">
+                  删除角色
+                </button>
+                <button type="button" id="discard" hidden>放弃更改</button>
+              </div>
+              <button type="submit" class="save-button">保存配置 ↗</button>
+            </div>
+          </form>
+        </section>
       </div>
       <p id="message" role="status"></p>
       <button id="reload" hidden>重新加载配置</button>
