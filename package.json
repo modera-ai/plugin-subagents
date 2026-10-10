@@ -10,13 +10,16 @@
   ],
   "scripts": {
     "build": "tsc --noEmit && modera-plugin-build .",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "pack": "modera-plugin pack .",
+    "release": "modera-plugin release . --publish"
   },
   "devDependencies": {
-    "@modera/plugin-build": "0.1.0",
-    "@modera/plugin-sdk": "0.1.0",
+    "@modera/plugin-build": "file:vendor/modera-plugin-build-0.1.0.tgz",
+    "@modera/plugin-sdk": "file:vendor/modera-plugin-sdk-0.1.0.tgz",
     "typescript": "^5.9.2",
-    "@types/node": "^24.3.0"
+    "@types/node": "^24.3.0",
+    "@modera/contracts": "file:vendor/modera-contracts-0.1.0.tgz"
   },
   "publishConfig": {
     "access": "public"
