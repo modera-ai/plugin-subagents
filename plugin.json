@@ -202,5 +202,6 @@
       "entry": "settings.html",
       "root": "dist/ui"
     }
-  }
+  },
+  "contributions": ["services"]
 }
