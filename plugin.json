@@ -2,7 +2,7 @@
   "apiVersion": 1,
   "id": "modera.subagents",
   "name": "子智能体",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "将任务委派给独立子智能体，查看独立会话并汇总执行结果。",
   "author": "Modera",
   "category": "tasks",

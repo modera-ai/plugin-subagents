@@ -1,6 +1,6 @@
 {
   "name": "@modera-plugin/subagents",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "type": "module",
   "description": "Host-managed subagents with independent child conversations.",
   "files": [
