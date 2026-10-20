@@ -24,7 +24,6 @@
     "tool.result",
     "settings"
   ],
-  "agentGuidance": "Call subagent_catalog before delegating to discover enabled configurable roles and their purposes. Delegate focused tasks using subagent_spawn. Include all context in the task. Default foreground starts workers immediately and waits after the current tool batch before the next parent model request. Start independent tasks in the same response to run them concurrently; use serial delegation when a task depends on a previous result. Use mode=background only when you have independent parent work to continue. explorer/reviewer use read tools; worker inherits operation tools with normal approval. Reports arrive automatically. Summarize assessed results for the user. At most four children run concurrently; children cannot delegate. Use subagent_list, subagent_wait and subagent_stop to manage background tasks.",
   "locales": {
     "en": {
       "name": "Subagents",
@@ -203,5 +202,24 @@
       "root": "dist/ui"
     }
   },
-  "contributions": ["services"]
+  "contributions": [
+    "services"
+  ],
+  "promptSections": [
+    {
+      "id": "tool-guidance",
+      "description": "子智能体 tool usage guidance",
+      "mode": "static",
+      "text": "Call subagent_catalog before delegating to discover enabled configurable roles and their purposes. Delegate focused tasks using subagent_spawn. Include all context in the task. Default foreground starts workers immediately and waits after the current tool batch before the next parent model request. Start independent tasks in the same response to run them concurrently; use serial delegation when a task depends on a previous result. Use mode=background only when you have independent parent work to continue. explorer/reviewer use read tools; worker inherits operation tools with normal approval. Reports arrive automatically. Summarize assessed results for the user. At most four children run concurrently; children cannot delegate. Use subagent_list, subagent_wait and subagent_stop to manage background tasks.",
+      "when": {
+        "anyToolAvailable": [
+          "subagent_catalog",
+          "subagent_spawn",
+          "subagent_list",
+          "subagent_wait",
+          "subagent_stop"
+        ]
+      }
+    }
+  ]
 }
